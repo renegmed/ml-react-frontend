@@ -1,0 +1,10 @@
+Image Drag and Drop
+
+https://medium.com/javascript-in-plain-english/creating-a-drag-and-drop-uploader-with-previews-using-react-aa794972c43e
+
+https://upmostly.com/tutorials/react-dropzone-file-uploads-react
+
+
+Radio Buttons
+
+https://stackoverflow.com/questions/27784212/how-to-use-radio-buttons-in-reactjs
