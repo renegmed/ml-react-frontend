@@ -9,7 +9,7 @@ class HomePrice extends Component {
 
     handleSubmit(event) {
 
-        const app_url = process.env.HOME_PRICE_PREDICTOR_URL;
+        //const app_url = process.env.REACT_APP_HOME_PRICE_PREDICTOR_URL;
         event.preventDefault();
     }
 

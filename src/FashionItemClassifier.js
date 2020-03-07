@@ -3,34 +3,48 @@ import { useDropzone } from 'react-dropzone'
 import axios from 'axios';
  
 
-const app_url = process.env.FASHION_MNIST_URL;
+const app_url = process.env.REACT_APP_FASHION_MNIST_URL;
 
-const ImageDropzone = () => {
+const ImageDropzone = (props) => {
     
     const maxSize = 1048576;
     
     const onDrop = useCallback( (acceptedFiles) => {
-      console.log("+++++++++++++++")
-      console.log(acceptedFiles);
-      console.log("File path:", acceptedFiles[0].path);
 
-      // const file = URL.createObjectURL(acceptedFiles[0]);
-      // console.log("+++++ dropped image, file name:")
-      // console.log(file); 
+      console.log(acceptedFiles);
+      console.log("+++ onDrop File path:", acceptedFiles[0].path);
+
+      const file = URL.createObjectURL(acceptedFiles[0]);
+      console.log("+++++ dropped image, file name:", file)     
 
       // const reader = new FileReader()
       // reader.onload = () => {
       //   // Do whatever you want with the file contents
-      //   const binaryStr = reader.result
-      //   console.log(binaryStr)
-      // }
-      // reader.readAsArrayBuffer(acceptedFiles[0])
+      //   const arrayBuffer = reader.result
+      //   //console.log("Array buffer:\n", arrayBuffer)
+      //   console.log("++++ image array buffer++++")
+      //   console.log(arrayBuffer)
 
+      //   const pred = predict( arrayBuffer )
+      //   console.log(pred)
+      // }
+      // //reader.readAsArrayBuffer(acceptedFiles[0])
+      // reader.readAsBinaryString(acceptedFiles[0])
+      // console.log("++++ image ++++")
+      // console.log(image)
+
+      const pred = predict( file )
+      console.log(pred)
+      //props.myfunc("test") 
 
     }, []);
 
-  
+    // const myfunc = () => {
+    //   console.log("==== clicked on drop zone =======")
+    // }
+
     const predict = (data) => {  
+      console.log("REACT_APP_FASHION_MNIST_URL:", app_url)
       return axios({
            method: 'post',
            url: app_url, 
@@ -39,7 +53,7 @@ const ImageDropzone = () => {
                'Content-Type': 'image',
                'Access-Control-Allow-Origin': '*'
            },
-           json: true
+           json: false
          })
          .then(function (response) {
            console.log("RESPONSE: ",response);
@@ -97,11 +111,32 @@ const ImageDropzone = () => {
   };
 
 class FashionItemClassifier extends Component {
-    
+    constructor() {
+      super();
+      this.state = {
+        filename: "" ,
+        prediction: ""
+      } 
+      //this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick() {
+      console.log('Click happened');
+    }
+
     render() {
-        return (
-            <ImageDropzone/>
-        )
+      const {prediction} = this.state
+      return (
+        <div>
+          <div>
+            <ImageDropzone myfunc={this.handleClick.bind(this)}/>
+          </div>
+          <div>
+            <label>Classification: {prediction}</label>
+          </div>
+        </div>
+       
+      )
     }
  
     

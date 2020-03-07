@@ -21,13 +21,13 @@ class TextClassifier extends Component {
 
     handleSubmit(event) {
         event.preventDefault();  
-        // console.log("+++ submit ++++\n",event.target.elements.textareabox.value)
-        this.setPrediction("Technology")
+        console.log("+++ item to submit ++++\n",event.target.elements.textareabox.value)
+        this.setPrediction()
     }
 
 
     setPrediction = val => {
-        // console.log("Set prediction: ", val)
+        console.log("++++ Set prediction: ", val)
         this.setState({
             prediction: val
         })
@@ -60,7 +60,7 @@ class TextClassifier extends Component {
             return predictions[0].predicted_label
             
           }).then(function (prediction){
-              console.log("Prediction:", prediction)           
+              console.log("+++++++ Prediction:", prediction)           
               return prediction
           })
           .catch(function (error) {

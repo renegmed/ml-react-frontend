@@ -1,3 +1,5 @@
+Status: wip
+
 Image Drag and Drop
 
 https://medium.com/javascript-in-plain-english/creating-a-drag-and-drop-uploader-with-previews-using-react-aa794972c43e
