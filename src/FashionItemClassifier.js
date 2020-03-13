@@ -1,11 +1,11 @@
-import React, { Component, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone'
 import axios from 'axios';
  
 
 const app_url = process.env.REACT_APP_FASHION_MNIST_URL;
 
-const ImageDropzone = (props) => {
+const FashionItemClassifier = (props) => {
     
     const maxSize = 1048576;
     
@@ -14,68 +14,70 @@ const ImageDropzone = (props) => {
       console.log(acceptedFiles);
       console.log("+++ onDrop File path:", acceptedFiles[0].path);
 
-      const file = URL.createObjectURL(acceptedFiles[0]);
-      console.log("+++++ dropped image, file name:", file)     
+      // const file = URL.createObjectURL(acceptedFiles[0]);
+      // console.log("+++++ dropped image, file name:", file)     
 
-      // const reader = new FileReader()
-      // reader.onload = () => {
-      //   // Do whatever you want with the file contents
-      //   const arrayBuffer = reader.result
-      //   //console.log("Array buffer:\n", arrayBuffer)
-      //   console.log("++++ image array buffer++++")
-      //   console.log(arrayBuffer)
+      // see https://developer.mozilla.org/en-US/docs/Web/API/Blob
 
-      //   const pred = predict( arrayBuffer )
-      //   console.log(pred)
-      // }
-      // //reader.readAsArrayBuffer(acceptedFiles[0])
+      const reader = new FileReader()
+      reader.onload = () => {
+        // Do whatever you want with the file contents
+        const data = reader.result
+        //console.log("Array buffer:\n", data)
+        console.log("++++ image data++++")
+        console.log(data) 
+ 
+        const pred = predict( data)  
+        console.log("------onDrop PREDICTION:",pred)
+        
+      }
+ 
       // reader.readAsBinaryString(acceptedFiles[0])
-      // console.log("++++ image ++++")
-      // console.log(image)
-
-      const pred = predict( file )
-      console.log(pred)
-      //props.myfunc("test") 
+      reader.readAsArrayBuffer(acceptedFiles[0]) // (file)
+      // reader.readAsDataURL(acceptedFiles[0])
+     
+      //return pred1
 
     }, []);
 
-    // const myfunc = () => {
-    //   console.log("==== clicked on drop zone =======")
-    // }
 
     const predict = (data) => {  
       console.log("REACT_APP_FASHION_MNIST_URL:", app_url)
+      console.log("+++++++ data ++++++")
+      console.log(data)
       return axios({
            method: 'post',
            url: app_url, 
            data: data,
            headers : {
-               'Content-Type': 'image',
-               'Access-Control-Allow-Origin': '*'
-           },
-           json: false
+              'Content-Type': 'image/jpg',
+              'Access-Control-Allow-Origin': '*'
+           }
          })
          .then(function (response) {
-           console.log("RESPONSE: ",response);
+           console.log("+++++RESPONSE: ",response);
            
-           console.log(response.data);
-           const prediction_response = JSON.parse(response.data)
-           console.log(prediction_response.predictions)
-           const predictions = prediction_response.predictions
+           console.log("Response data:",response.data.response);
+           //const prediction_response = JSON.parse(response)        
+           //console.log("++++= Prediction_response:",prediction_response)
 
-           console.log(predictions);
+          //  const predictions = prediction_response.predictions
+          //  console.log("++++++ Predictions:".predictions);
 
-           return predictions[0].predicted_label
+          //  return predictions[0].predicted_label
+          return response.data.response
            
          }).then(function (prediction){
              console.log("Prediction:", prediction)           
-             return prediction
+             //return prediction
+             props.prediction = prediction
          })
          .catch(function (error) {
            console.log(error);  
          });
     }
  
+
     const { isDragActive, getRootProps, getInputProps, isDragReject, acceptedFiles, rejectedFiles } = useDropzone({
       onDrop,
       accept: 'image/png,image/jpeg,image/jpg',
@@ -83,8 +85,15 @@ const ImageDropzone = (props) => {
       maxSize,   
     });
   
+
     const isFileTooLarge = rejectedFiles.length > 0 && rejectedFiles[0].size > maxSize;
     
+    const acceptedFilesItems = acceptedFiles.map(file => (
+      <li key={file.path}>
+        {file.path} - {file.size} bytes
+      </li>
+    ));
+
     return (    
       <div className="container text-center mt-5">
         <div {...getRootProps()}>
@@ -106,40 +115,18 @@ const ImageDropzone = (props) => {
             </li>
           ))}
         </ul>   
+        <div>
+            <label>Classification: TO BE RESOLVED</label>
+          </div>
+          <aside>
+            <h4>Accepted Files</h4>
+            <ul>
+              {acceptedFilesItems}
+            </ul>
+          </aside>
       </div>
     );
   };
-
-class FashionItemClassifier extends Component {
-    constructor() {
-      super();
-      this.state = {
-        filename: "" ,
-        prediction: ""
-      } 
-      //this.handleClick = this.handleClick.bind(this);
-    }
-
-    handleClick() {
-      console.log('Click happened');
-    }
-
-    render() {
-      const {prediction} = this.state
-      return (
-        <div>
-          <div>
-            <ImageDropzone myfunc={this.handleClick.bind(this)}/>
-          </div>
-          <div>
-            <label>Classification: {prediction}</label>
-          </div>
-        </div>
-       
-      )
-    }
  
-    
-}
 
 export default FashionItemClassifier;
